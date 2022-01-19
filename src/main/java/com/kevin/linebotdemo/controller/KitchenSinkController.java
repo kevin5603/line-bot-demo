@@ -65,6 +65,7 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Collections.singletonList;
 
@@ -233,7 +234,7 @@ public class KitchenSinkController {
         log.info("Got text message from replyToken:{}: text:{} emojis:{}", replyToken, text,
                 content.getEmojis());
         switch (text) {
-            case "藍36": {
+            case "上班": {
                 log.info("line輸入：" + text);
                 final String userId = event.getSource().getUserId();
                 lineMessagingClient
@@ -245,17 +246,22 @@ public class KitchenSinkController {
                                 return;
                             }
                             try {
-                                val queryDto = new QueryDto("Taipei", "藍36", "StopName", "StopName/Zh_tw eq '上灣仔' and Direction eq '1'");
-                                Bus bus = busEstimatedController.getBusInfo(queryDto).stream().findAny().orElse(null);
-                                TextMessage textMessage;
-                                if (bus != null) {
-                                    String info = String.format("車站名稱：%s, 預估到站時間:%d分%d秒",
-                                            bus.getStopName().getZh_tw(),
-                                            bus.getEstimateTime()/60,
-                                            bus.getEstimateTime()%60);
-                                    textMessage = new TextMessage(info);
+                                QueryDto path1 = new QueryDto("8663", "RouteName/Zh_tw eq '藍36'");
+                                QueryDto path2 = new QueryDto("966", "RouteName/Zh_tw eq '903' or RouteName/Zh_tw eq '645副' or RouteName/Zh_tw eq '645' or RouteName/Zh_tw eq '民權幹線'");
+                                List<Bus> busInfo = Stream.concat(busEstimatedController.getBusInfo(path1).stream(), busEstimatedController.getBusInfo(path2).stream())
+                                        .collect(Collectors.toList());
+                                List<Message> textMessage;
+
+                                if (busInfo.size() != 0) {
+                                    textMessage = busInfo.stream().map(bus -> {
+                                        String info = String.format("車站名稱：%s, 預估到站時間:%d分%d秒",
+                                                bus.getStopName().getZh_tw(),
+                                                bus.getEstimateTime() / 60,
+                                                bus.getEstimateTime() % 60);
+                                        return new TextMessage(info);
+                                    }).collect(Collectors.toList());
                                 } else {
-                                    textMessage = new TextMessage("查無資料");
+                                    textMessage = List.of(new TextMessage("查無資料"));
                                 }
                                 this.reply(replyToken, textMessage);
                             } catch (IOException e) {

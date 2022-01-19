@@ -1,18 +1,20 @@
 package com.kevin.linebotdemo.model;
 
-import com.sun.istack.NotNull;
-import lombok.*;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-@RequiredArgsConstructor()
+@RequiredArgsConstructor
 public class QueryDto {
 
+    private String city = "Taipei";
     @NonNull
-    private String city;
+    private String stationId;
+    private String select = "StopName,RouteName";
     @NonNull
-    private String routeName;
-    private String select = "";
-    private String filter = "";
+    private String filter;
 }
