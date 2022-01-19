@@ -20,7 +20,8 @@ pipeline {
                        script {
                          def remote = [name: 'ec2', host: 'project.demo.kevin5603.click', user: 'ec2-user', identityFile: PEM_FILE, allowAnyHosts: true]
                          sshCommand remote: remote, command: "docker-compose -f project/line-bot-demo/docker-compose.yml pull web"
-                         sshCommand remote: remote, command: "docker-compose -f project/line-bot-demo/docker-compose.yml up --force-recreate --build -d web"
+                         sshCommand remote: remote, command: "docker-compose -f project/line-bot-demo/docker-compose.yml down"
+                         sshCommand remote: remote, command: "docker-compose -f project/line-bot-demo/docker-compose.yml up --force-recreate --build -d"
                        }
                     }
             }
