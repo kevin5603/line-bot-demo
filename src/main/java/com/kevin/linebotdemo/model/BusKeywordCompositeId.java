@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.IdClass;
 
 import java.io.Serializable;
 
@@ -20,7 +19,7 @@ import static javax.persistence.GenerationType.AUTO;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CompositeId implements Serializable {
+public class BusKeywordCompositeId implements Serializable {
 
     @Id
     @GeneratedValue(strategy = AUTO)

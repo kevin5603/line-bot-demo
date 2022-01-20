@@ -36,15 +36,4 @@ public class BusDto {
     @SerializedName("UpdateTime")
     private Date updateTime;
 
-    /**
-     * @author liyanting
-     */
-    @Data
-    private class NameType {
-
-        @SerializedName("Zh_tw")
-        private String zh_tw;
-        @SerializedName("En")
-        private String en;
-    }
 }

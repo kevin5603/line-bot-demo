@@ -59,7 +59,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -255,7 +254,7 @@ public class KitchenSinkController {
                                 if (busDtoInfo.size() != 0) {
                                     textMessage = busDtoInfo.stream().map(busDto -> {
                                         String info = String.format("車站名稱：%s, 預估到站時間:%d分%d秒",
-                                                busDto.getNameType().getZh_tw(),
+                                                busDto.getNameType(),
                                                 busDto.getEstimateTime() / 60,
                                                 busDto.getEstimateTime() % 60);
                                         return new TextMessage(info);

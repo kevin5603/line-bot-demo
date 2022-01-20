@@ -14,3 +14,6 @@ line.bot:
   channel-token: ${CHANNEL_TOKEN}
   channel-secret: ${CHANNEL_SECRET}
   handler.path: /callback
+bus:
+  app-id: ${BUS_APP_ID}
+  app-key: ${BUS_APP_KEY}
