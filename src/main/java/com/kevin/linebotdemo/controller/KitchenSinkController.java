@@ -247,17 +247,18 @@ public class KitchenSinkController {
                             }
                             try {
                                 QueryDto path1 = new QueryDto("8663", "RouteName/Zh_tw eq '藍36'");
-                                QueryDto path2 = new QueryDto("966", "RouteName/Zh_tw eq '903' or RouteName/Zh_tw eq '645副' or RouteName/Zh_tw eq '645' or RouteName/Zh_tw eq '民權幹線'");
+                                QueryDto path2 = new QueryDto("966", "RouteName/Zh_tw eq '民權幹線'");
                                 List<Bus> busInfo = Stream.concat(busEstimatedController.getBusInfo(path1).stream(), busEstimatedController.getBusInfo(path2).stream())
                                         .collect(Collectors.toList());
                                 List<Message> textMessage;
 
                                 if (busInfo.size() != 0) {
                                     textMessage = busInfo.stream().map(bus -> {
-                                        String info = String.format("車站名稱：%s, 預估到站時間:%d分%d秒",
-                                                bus.getStopName().getZh_tw(),
+                                        String info = String.format("%s：預估%d分%d秒到達%s",
+                                                bus.getRouteName().getZh_tw(),
                                                 bus.getEstimateTime() / 60,
-                                                bus.getEstimateTime() % 60);
+                                                bus.getEstimateTime() % 60,
+                                                bus.getStopName().getZh_tw());
                                         return new TextMessage(info);
                                     }).collect(Collectors.toList());
                                 } else {
