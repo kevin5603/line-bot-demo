@@ -15,15 +15,10 @@ import javax.persistence.*;
 public class BusKeyword {
 
     @Id
-    private Long id;
-    @Id
     private String userId;
-    private Long keywordId;
+    @Id
+    private String keyword;
+    private Long stationId;
     private Long busId;
 
-    public BusKeyword(String userId, Long keywordId, Long busId) {
-        this.userId = userId;
-        this.keywordId = keywordId;
-        this.busId = busId;
-    }
 }

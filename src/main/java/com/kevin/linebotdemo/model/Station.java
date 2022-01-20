@@ -23,5 +23,12 @@ public class Station {
     @Id
     @GeneratedValue(strategy = AUTO)
     private Long id;
-    private String stationName;
+    /** 場站代碼 */
+    private String code;
+    /** 場站中文代碼 */
+    private String name;
+
+    public Station(String name) {
+        this.name = name;
+    }
 }

@@ -22,8 +22,7 @@ import static javax.persistence.GenerationType.AUTO;
 public class BusKeywordCompositeId implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = AUTO)
-    private Long id;
-    @Id
     private String userId;
+    @Id
+    private String keyword;
 }

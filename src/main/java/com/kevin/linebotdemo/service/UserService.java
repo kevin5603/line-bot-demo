@@ -1,6 +1,5 @@
 package com.kevin.linebotdemo.service;
 
-import com.kevin.linebotdemo.config.LineBotConfig;
 import com.kevin.linebotdemo.model.Users;
 import com.kevin.linebotdemo.repository.UserRepository;
 import lombok.AllArgsConstructor;

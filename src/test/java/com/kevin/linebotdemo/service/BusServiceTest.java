@@ -1,21 +1,52 @@
 package com.kevin.linebotdemo.service;
 
-import org.junit.jupiter.api.BeforeAll;
+import com.kevin.linebotdemo.repository.BusKeywordRepository;
+import com.kevin.linebotdemo.repository.BusRepository;
+import com.kevin.linebotdemo.repository.StationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 class BusServiceTest {
-    BusService s;
+    private BusService busService;
+    private BusKeywordRepository busKeywordRepository =  Mockito.mock(BusKeywordRepository.class);
+    private StationRepository stationRepository = Mockito.mock(StationRepository.class);
+    private BusRepository busRepository = Mockito.mock(BusRepository.class);
 
     @BeforeEach
     void setUp() {
-        s = new BusService(null, null, null);
+        busService = new BusService(busKeywordRepository,
+                stationRepository,
+                busRepository);
     }
 
     @Test
     void registerKeyword() {
-        s.registerKeyword("註冊 回家 三民國中 630,617,645");
+        busService.registerKeyword("id", "註冊 回家 三民國中 630,617,645");
+    }
+
+    @Test
+    void testRegisterKeyword() {
+    }
+
+    @Test
+    void getStationId() {
+    }
+
+    @Test
+    void saveBus() {
+    }
+
+    @Test
+    void getBusId() {
+    }
+
+    @Test
+    void findBusKeywordsByUserId() {
+    }
+
+    @Test
+    void deleteByUserIdAndKeywordId() {
     }
 }

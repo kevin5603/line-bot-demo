@@ -25,5 +25,5 @@ public interface BusKeywordRepository extends JpaRepository<BusKeyword, BusKeywo
      * @param userId
      * @param keyId
      */
-    void deleteByUserIdAndKeywordId(String userId, Long keyId);
+    void deleteByUserIdAndKeyword(String userId, String keyword);
 }

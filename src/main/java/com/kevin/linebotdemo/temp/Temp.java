@@ -12,14 +12,13 @@ public class Temp {
 
     public Temp(BusKeywordRepository repository) {
         this.repository = repository;
-        a();
     }
 
 
     public void a() {
 
         for (int i = 1; i <= 5; i++) {
-            BusKeyword busKeyword = new BusKeyword("person" + i, 1L, 1L);
+            BusKeyword busKeyword = new BusKeyword("person" + i, "", 1L, 1L);
             repository.save(busKeyword);
         }
         repository.flush();

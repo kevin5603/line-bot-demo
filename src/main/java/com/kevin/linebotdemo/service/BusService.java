@@ -1,12 +1,11 @@
 package com.kevin.linebotdemo.service;
 
-import com.kevin.linebotdemo.exception.KeywordNotFoundException;
 import com.kevin.linebotdemo.model.Bus;
 import com.kevin.linebotdemo.model.BusKeyword;
-import com.kevin.linebotdemo.model.Keyword;
+import com.kevin.linebotdemo.model.Station;
 import com.kevin.linebotdemo.repository.BusKeywordRepository;
 import com.kevin.linebotdemo.repository.BusRepository;
-import com.kevin.linebotdemo.repository.KeywordRepository;
+import com.kevin.linebotdemo.repository.StationRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,25 +21,34 @@ import java.util.List;
 @Slf4j
 public class BusService {
     private final BusKeywordRepository busKeywordRepository;
-    private final KeywordRepository keywordRepository;
+    private final StationRepository stationRepository;
     private final BusRepository busRepository;
 
 
     /**
-     * @param cmd
+     * @param lineMessage
      */
     @Transactional(rollbackFor = Exception.class)
-    public void registerKeyword(String cmd) {
-        String[] s = cmd.split(" ");
+    public void registerKeyword(String userId, String lineMessage) {
+        String[] s = lineMessage.split(" ");
         String keyword = s[1];
         String station = s[2];
         String[] busList = s[3].split(",");
-        log.info(keyword);
-        log.info(station);
-        for(String ss: busList) {
-            log.info(ss);
+
+        Long stationId = getStationId(station);
+
+        for(String bus: busList) {
+            Long busId = getBusId(bus);
+            busKeywordRepository.save(new BusKeyword(userId, keyword, stationId, busId));
         }
 
+    }
+
+    Long getStationId(String station) {
+        return stationRepository
+                .findByName(station)
+                .orElse(stationRepository.save(new Station(station)))
+                .getId();
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -64,8 +72,6 @@ public class BusService {
 
     @Transactional(rollbackFor = Exception.class)
     void deleteByUserIdAndKeywordId(String userId, String keyword) {
-        Keyword key = keywordRepository.findByWord(keyword)
-                .orElseThrow(() -> new KeywordNotFoundException("沒有找到關鍵字"));
-        busKeywordRepository.deleteByUserIdAndKeywordId(userId, key.getId());
+        busKeywordRepository.deleteByUserIdAndKeyword(userId, keyword);
     }
 }
