@@ -1,12 +1,12 @@
 package com.kevin.linebotdemo.repository;
 
 
-import com.kevin.linebotdemo.model.Bus;
+import com.kevin.linebotdemo.model.dto.BusDto;
 
 import java.util.List;
 
 public interface PublicTransportRepository {
 
-    List<Bus> findByName(String name);
+    List<BusDto> findByName(String name);
 }
 

@@ -1,4 +1,4 @@
-package com.kevin.linebotdemo.model;
+package com.kevin.linebotdemo.model.dto;
 
 
 import lombok.Data;
@@ -6,6 +6,10 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * 查詢公車API所需參數
+ * @author liyanting
+ */
 @Data
 @NoArgsConstructor
 @RequiredArgsConstructor

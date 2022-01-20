@@ -1,4 +1,4 @@
-package com.kevin.linebotdemo.model;
+package com.kevin.linebotdemo.model.dto;
 
 import com.google.gson.annotations.SerializedName;
 import lombok.Data;
@@ -6,18 +6,23 @@ import lombok.ToString;
 
 import java.util.Date;
 
+/**
+ * 公車DTO
+ *
+ * @author liyanting
+ */
 @Data
 @ToString
-public class Bus {
+public class BusDto {
 
     @SerializedName("StopName")
-    private StopName stopName;
+    private NameType nameType;
 
     @SerializedName("Direction")
     private int direction;
 
     @SerializedName("RouteName")
-    private StopName routeName;
+    private NameType routeName;
 
     @SerializedName("EstimateTime")
     private int estimateTime;
@@ -30,4 +35,16 @@ public class Bus {
 
     @SerializedName("UpdateTime")
     private Date updateTime;
+
+    /**
+     * @author liyanting
+     */
+    @Data
+    private class NameType {
+
+        @SerializedName("Zh_tw")
+        private String zh_tw;
+        @SerializedName("En")
+        private String en;
+    }
 }

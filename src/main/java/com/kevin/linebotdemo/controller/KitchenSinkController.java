@@ -16,8 +16,8 @@
 
 package com.kevin.linebotdemo.controller;
 
-import com.kevin.linebotdemo.model.Bus;
-import com.kevin.linebotdemo.model.QueryDto;
+import com.kevin.linebotdemo.model.dto.BusDto;
+import com.kevin.linebotdemo.model.dto.QueryDto;
 import com.linecorp.bot.client.LineBlobClient;
 import com.linecorp.bot.client.LineMessagingClient;
 import com.linecorp.bot.client.MessageContentResponse;
@@ -48,8 +48,6 @@ import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
@@ -61,7 +59,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -234,6 +232,8 @@ public class KitchenSinkController {
         log.info("Got text message from replyToken:{}: text:{} emojis:{}", replyToken, text,
                 content.getEmojis());
         switch (text) {
+            case "@":
+
             case "上班": {
                 log.info("line輸入：" + text);
                 final String userId = event.getSource().getUserId();
@@ -248,16 +248,16 @@ public class KitchenSinkController {
                             try {
                                 QueryDto path1 = new QueryDto("8663", "RouteName/Zh_tw eq '藍36'");
                                 QueryDto path2 = new QueryDto("966", "RouteName/Zh_tw eq '903' or RouteName/Zh_tw eq '645副' or RouteName/Zh_tw eq '645' or RouteName/Zh_tw eq '民權幹線'");
-                                List<Bus> busInfo = Stream.concat(busEstimatedController.getBusInfo(path1).stream(), busEstimatedController.getBusInfo(path2).stream())
+                                List<BusDto> busDtoInfo = Stream.concat(busEstimatedController.getBusInfo(path1).stream(), busEstimatedController.getBusInfo(path2).stream())
                                         .collect(Collectors.toList());
                                 List<Message> textMessage;
 
-                                if (busInfo.size() != 0) {
-                                    textMessage = busInfo.stream().map(bus -> {
+                                if (busDtoInfo.size() != 0) {
+                                    textMessage = busDtoInfo.stream().map(busDto -> {
                                         String info = String.format("車站名稱：%s, 預估到站時間:%d分%d秒",
-                                                bus.getStopName().getZh_tw(),
-                                                bus.getEstimateTime() / 60,
-                                                bus.getEstimateTime() % 60);
+                                                busDto.getNameType().getZh_tw(),
+                                                busDto.getEstimateTime() / 60,
+                                                busDto.getEstimateTime() % 60);
                                         return new TextMessage(info);
                                     }).collect(Collectors.toList());
                                 } else {

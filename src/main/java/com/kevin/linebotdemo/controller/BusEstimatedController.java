@@ -2,8 +2,8 @@ package com.kevin.linebotdemo.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.kevin.linebotdemo.model.Bus;
-import com.kevin.linebotdemo.model.QueryDto;
+import com.kevin.linebotdemo.model.dto.BusDto;
+import com.kevin.linebotdemo.model.dto.QueryDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,7 +32,7 @@ public class BusEstimatedController {
     private static final String URL = "https://ptx.transportdata.tw/MOTC/v2/Bus/EstimatedTimeOfArrival/City/%s/PassThrough/Station/%s?$select=%s&$filter=%s&$format=JSON";
 
     @PostMapping("/v2")
-    public List<Bus> getBusInfo(@RequestBody QueryDto dto) throws IOException {
+    public List<BusDto> getBusInfo(@RequestBody QueryDto dto) throws IOException {
         String path = buildPath(dto, URL);
         log.info(path);
 
@@ -42,7 +42,7 @@ public class BusEstimatedController {
 
         String response = readData(connection);
 
-        List<Bus> list = jsonToObject(response);
+        List<BusDto> list = jsonToObject(response);
 
         return list;
     }
@@ -61,12 +61,12 @@ public class BusEstimatedController {
         return response;
     }
 
-    private List<Bus> jsonToObject(String response) {
+    private List<BusDto> jsonToObject(String response) {
         Gson gson = new Gson();
 
-        Type type = new TypeToken<List<Bus>>() {
+        Type type = new TypeToken<List<BusDto>>() {
         }.getType();
-        List<Bus> list = gson.fromJson(response, type);
+        List<BusDto> list = gson.fromJson(response, type);
         return list;
     }
 
