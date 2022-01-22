@@ -7,7 +7,7 @@ import lombok.Data;
  * @author liyanting
  */
 @Data
-class NameType {
+public class NameType {
 
     @SerializedName("Zh_tw")
     private String zh_tw;

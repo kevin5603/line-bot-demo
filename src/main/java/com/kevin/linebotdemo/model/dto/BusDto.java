@@ -16,7 +16,7 @@ import java.util.Date;
 public class BusDto {
 
     @SerializedName("StopName")
-    private NameType nameType;
+    private NameType stopName;
 
     @SerializedName("Direction")
     private int direction;

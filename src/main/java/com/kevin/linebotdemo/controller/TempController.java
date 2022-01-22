@@ -18,8 +18,8 @@ public class TempController {
 
     @GetMapping("/api/v1")
     public void a() {
-        log.info(" ========== test ==========");
-        busService.registerKeyword("kevin5603", "註冊 回家 三民國中 630,617,645");
-        log.info(" ========== test ==========");
+//        log.info(" ========== test ==========");
+//        busService.registerKeyword("kevin5603", "註冊 回家 三民國中 630,617,645");
+//        log.info(" ========== test ==========");
     }
 }

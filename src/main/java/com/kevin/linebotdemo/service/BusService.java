@@ -5,6 +5,7 @@ import com.kevin.linebotdemo.model.BusKeyword;
 import com.kevin.linebotdemo.model.Station;
 import com.kevin.linebotdemo.repository.BusKeywordRepository;
 import com.kevin.linebotdemo.repository.BusRepository;
+import com.kevin.linebotdemo.repository.KeywordRepository;
 import com.kevin.linebotdemo.repository.StationRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,7 @@ import java.util.List;
 @Slf4j
 public class BusService {
     private final BusKeywordRepository busKeywordRepository;
+    private final KeywordRepository keywordRepository;
     private final StationRepository stationRepository;
     private final BusRepository busRepository;
 
@@ -39,7 +41,8 @@ public class BusService {
 
         for(String bus: busList) {
             Long busId = getBusId(bus);
-            busKeywordRepository.save(new BusKeyword(userId, keyword, stationId, busId));
+            // TODO
+//            busKeywordRepository.save(new BusKeyword(keyword, stationId, busId));
         }
 
     }
@@ -66,12 +69,15 @@ public class BusService {
      * @return
      */
     @Transactional(readOnly = true)
+    // TODO
     List<BusKeyword> findBusKeywordsByUserId(String userId) {
-        return busKeywordRepository.findBusKeywordsByUserId(userId);
+//        return busKeywordRepository.findByUserId(userId);
+        return null;
     }
 
     @Transactional(rollbackFor = Exception.class)
+        // TODO
     void deleteByUserIdAndKeywordId(String userId, String keyword) {
-        busKeywordRepository.deleteByUserIdAndKeyword(userId, keyword);
+//        busKeywordRepository.deleteByUserIdAndKeyword(userId, keyword);
     }
 }

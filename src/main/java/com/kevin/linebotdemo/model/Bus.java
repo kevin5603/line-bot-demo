@@ -8,7 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
-import static javax.persistence.GenerationType.AUTO;
+import static javax.persistence.GenerationType.IDENTITY;
 
 /**
  * @author liyanting
@@ -19,7 +19,7 @@ import static javax.persistence.GenerationType.AUTO;
 @NoArgsConstructor
 public class Bus {
     @Id
-    @GeneratedValue(strategy = AUTO)
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
     private String name;
 

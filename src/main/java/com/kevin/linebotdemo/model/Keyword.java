@@ -1,14 +1,9 @@
 package com.kevin.linebotdemo.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-
-import static javax.persistence.GenerationType.AUTO;
 
 /**
  * @author liyanting
@@ -17,11 +12,14 @@ import static javax.persistence.GenerationType.AUTO;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@RequiredArgsConstructor
 public class Keyword {
-
     @Id
-    @GeneratedValue(strategy = AUTO)
     private Long id;
-    private String word;
 
+    @NonNull
+    private String userId;
+
+    @NonNull
+    private String word;
 }

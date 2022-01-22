@@ -19,6 +19,18 @@ Line ID @327lmcvf<br>
 
 ## 關鍵字
 
+### (手機分享地理位置)
+
+說明：顯示附近100公尺的公車車站
+
+TODO...
+
+### 幫助/help
+
+說明：顯示使用說明
+
+TODO...
+
 ### 註冊關鍵字
 
 說明：會將註冊關鍵字到個人記錄裡，之後每當使用者輸入關鍵字，會顯示公車到站資訊。<br>
@@ -54,12 +66,14 @@ Line ID @327lmcvf<br>
 範例1：<code>查詢關鍵字</code><br>
 
 ## 即時到站通知
-開發中
-短期訂閱(當指定公車即將到達時主動發line通知)
+
+說明：短期訂閱(當指定公車即將到達時主動發line通知)
+
+TODO...
+
 
 
 
 ### Reference
 
-message api doc<br>
-https://developers.line.biz/en/reference/messaging-api/#messages
+[line message api doc](https://developers.line.biz/en/reference/messaging-api/#messages)

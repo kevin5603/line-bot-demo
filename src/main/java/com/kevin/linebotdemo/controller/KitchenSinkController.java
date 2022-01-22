@@ -231,8 +231,10 @@ public class KitchenSinkController {
         log.info("Got text message from replyToken:{}: text:{} emojis:{}", replyToken, text,
                 content.getEmojis());
         switch (text) {
-            case "@":
-
+            case "說明": {
+                // TODO
+                break;
+            }
             case "上班": {
                 log.info("line輸入：" + text);
                 final String userId = event.getSource().getUserId();
@@ -246,17 +248,18 @@ public class KitchenSinkController {
                             }
                             try {
                                 QueryDto path1 = new QueryDto("8663", "RouteName/Zh_tw eq '藍36'");
-                                QueryDto path2 = new QueryDto("966", "RouteName/Zh_tw eq '903' or RouteName/Zh_tw eq '645副' or RouteName/Zh_tw eq '645' or RouteName/Zh_tw eq '民權幹線'");
-                                List<BusDto> busDtoInfo = Stream.concat(busEstimatedController.getBusInfo(path1).stream(), busEstimatedController.getBusInfo(path2).stream())
+                                QueryDto path2 = new QueryDto("966", "RouteName/Zh_tw eq '民權幹線'");
+                                List<BusDto> busInfo = Stream.concat(busEstimatedController.getBusInfo(path1).stream(), busEstimatedController.getBusInfo(path2).stream())
                                         .collect(Collectors.toList());
                                 List<Message> textMessage;
 
-                                if (busDtoInfo.size() != 0) {
-                                    textMessage = busDtoInfo.stream().map(busDto -> {
-                                        String info = String.format("車站名稱：%s, 預估到站時間:%d分%d秒",
-                                                busDto.getNameType(),
-                                                busDto.getEstimateTime() / 60,
-                                                busDto.getEstimateTime() % 60);
+                                if (busInfo.size() != 0) {
+                                    textMessage = busInfo.stream().map(bus -> {
+                                        String info = String.format("%s：預估%d分%d秒到達%s",
+                                                bus.getRouteName().getZh_tw(),
+                                                bus.getEstimateTime() / 60,
+                                                bus.getEstimateTime() % 60,
+                                                bus.getStopName().getZh_tw());
                                         return new TextMessage(info);
                                     }).collect(Collectors.toList());
                                 } else {
