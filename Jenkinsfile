@@ -11,7 +11,7 @@ pipeline {
         }
         stage('Test') {
             steps {
-                echo 'TODO...'
+                sh './mvnw test'
             }
         }
         stage('deploy to ec2') {

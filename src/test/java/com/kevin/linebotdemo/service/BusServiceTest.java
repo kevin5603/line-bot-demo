@@ -1,77 +1,61 @@
 package com.kevin.linebotdemo.service;
 
-import com.kevin.linebotdemo.repository.BusKeywordRepository;
+import com.kevin.linebotdemo.model.Bus;
 import com.kevin.linebotdemo.repository.BusRepository;
-import com.kevin.linebotdemo.repository.KeywordRepository;
-import com.kevin.linebotdemo.repository.StationRepository;
+import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(SpringExtension.class)
 class BusServiceTest {
-    private BusService busService;
-    private BusKeywordRepository busKeywordRepository =  Mockito.mock(BusKeywordRepository.class);
-    private KeywordRepository keywordRepository = Mockito.mock(KeywordRepository.class);
-    private StationRepository stationRepository = Mockito.mock(StationRepository.class);
-    private BusRepository busRepository = Mockito.mock(BusRepository.class);
+    private BusService underTest;
+    @MockBean
+    private BusRepository busRepository;
 
     @BeforeEach
     void setUp() {
-        busService = new BusService(busKeywordRepository,
-                keywordRepository,
-                stationRepository,
-                busRepository);
-    }
-
-//    @Test
-    // TODO
-//    void registerKeyword() {
-//        // give
-//        val user_id = "kevin5603";
-//        val keyword = "回家";
-//        val station_id = 1L;
-//        val busId = 1L;
-//        val busKeyword = new BusKeyword(keyword, station_id, busId);
-//        when(busKeywordRepository.save(any())).thenReturn(busKeyword);
-//        val stationName = "三民國中";
-//        val stationCode = "123";
-//        val address = "三民國中(向西)";
-//        val station = new Station(station_id, stationCode, stationName, address);
-//        when(stationRepository.findByName(stationName)).thenReturn(Optional.of(station));
-//        val busName = "630";
-//        val bus = new Bus(busId, busName);
-//        when(busRepository.findByName(busName)).thenReturn(Optional.of(bus));
-//
-//        // when
-//        busService.registerKeyword(user_id, "註冊 回家 三民國中 630");
-//
-//        // then
-//        then(busKeywordRepository).should(new Times(1)).save(busKeyword);
-//
-//    }
-
-    @Test
-    void testRegisterKeyword() {
+        underTest = new BusService(busRepository);
     }
 
     @Test
-    void getStationId() {
+    void getBusIdIfBusExists() {
+        // given
+        String busName = "630";
+        val bus = new Bus(1L, busName);
+        when(busRepository.findByName(busName)).thenReturn(Optional.of(bus));
+
+        // when
+        Long busId = underTest.getBusId(busName);
+
+        // then
+        assertEquals(bus.getId(), busId);
+        verify(busRepository, times(1)).findByName(busName);
+        verify(busRepository, never()).save(any());
+
     }
 
     @Test
-    void saveBus() {
-    }
+    void getBusIdIfBusNotExists() {
+        // given
+        String busName = "630";
+        val bus = new Bus(1L, busName);
+        when(busRepository.findByName(busName)).thenReturn(Optional.empty());
+        when(busRepository.save(any())).thenReturn(bus);
 
-    @Test
-    void getBusId() {
-    }
+        // when
+        Long actualBusId = underTest.getBusId(busName);
 
-    @Test
-    void findBusKeywordsByUserId() {
-    }
-
-    @Test
-    void deleteByUserIdAndKeywordId() {
+        // then
+        assertEquals(bus.getId(), actualBusId);
+        verify(busRepository, times(1)).findByName(busName);
+        verify(busRepository, times(1)).save(any());
     }
 }

@@ -24,7 +24,7 @@ public interface BusKeywordRepository extends JpaRepository<BusKeyword, BusKeywo
     @Query("Select new com.kevin.linebotdemo.model.dto.StationBusDto(s.name, s.code, b.name) from BusKeyword bk" +
             " left join Keyword k on k.id = bk.keywordId" +
             " left join Bus b on b.id = bk.busId" +
-            " left join Station s on s.id = bk.stationId" +
+            " left join Station s on s.id = bk.stationGroupId" +
             " where k.userId = :userId and k.word = :word")
     List<StationBusDto> findByUserIdAndKeyword(@Param("userId") String userId, @Param("word") String word);
 

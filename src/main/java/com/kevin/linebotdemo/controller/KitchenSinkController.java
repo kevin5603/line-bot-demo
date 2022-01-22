@@ -64,11 +64,13 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.kevin.linebotdemo.config.BusAPIConst.COMMA;
 import static java.util.Collections.singletonList;
 
 @Slf4j
-@LineMessageHandler
+//@LineMessageHandler
 @AllArgsConstructor
+@Deprecated
 public class KitchenSinkController {
     private final LineMessagingClient lineMessagingClient;
 
@@ -154,14 +156,14 @@ public class KitchenSinkController {
         String replyToken = event.getReplyToken();
         this.replyText(replyToken, "Got memberJoined message " + event.getJoined().getMembers()
                 .stream().map(Source::getUserId)
-                .collect(Collectors.joining(",")));
+                .collect(Collectors.joining(COMMA)));
     }
 
     @EventMapping
     public void handleMemberLeft(MemberLeftEvent event) {
         log.info("Got memberLeft message: {}", event.getLeft().getMembers()
                 .stream().map(Source::getUserId)
-                .collect(Collectors.joining(",")));
+                .collect(Collectors.joining(COMMA)));
     }
 
     @EventMapping

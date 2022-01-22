@@ -32,7 +32,17 @@ public class Station {
     @NonNull
     private String address;
 
+    /** 方向 (資料來源該項可能為null使用該欄位要特別注意)*/
+    private String bearing;
+
     public Station(String name) {
         this.name = name;
+    }
+
+    public Station(@NonNull String code, @NonNull String name, @NonNull String address, String bearing) {
+        this.code = code;
+        this.name = name;
+        this.address = address;
+        this.bearing = bearing;
     }
 }

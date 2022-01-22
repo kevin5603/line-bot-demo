@@ -1,6 +1,6 @@
 ### local profile ###
 application-dev.yml
-
+src/test/resources/application-dev.yml
 ### apple ###
 **/.DS_Store
 
@@ -44,5 +44,5 @@ build/
 ### VS Code ###
 .vscode/
 
-### kevin-config ###
+### local-test-config ###
 test.sql

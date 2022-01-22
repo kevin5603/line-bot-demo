@@ -1,9 +1,7 @@
 package com.kevin.linebotdemo.model;
 
 import com.kevin.linebotdemo.config.LineResponseCode;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 /**
  * @author liyanting
@@ -11,9 +9,12 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LineMissionResponse {
+@RequiredArgsConstructor
+public class LineMissionResponse<T> {
 
     /** 處理結果代碼 */
+    @NonNull
     private LineResponseCode code;
+    private T body;
 
 }

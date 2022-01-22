@@ -19,15 +19,6 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    // TODO refactor
-    public Users getUser(String userId) {
-        if (hasUser(userId)) {
-            return userRepository.findById(userId).get();
-        } else {
-            return createUser(userId);
-        }
-    }
-
     @Transactional(readOnly = true)
     public Boolean hasUser(String userId) {
         Optional<Users> optionalUser = userRepository.findById(userId);

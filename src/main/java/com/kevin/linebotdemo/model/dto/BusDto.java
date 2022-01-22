@@ -1,6 +1,6 @@
 package com.kevin.linebotdemo.model.dto;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.ToString;
 
@@ -15,25 +15,25 @@ import java.util.Date;
 @ToString
 public class BusDto {
 
-    @SerializedName("StopName")
+    @JsonProperty("StopName")
     private NameType stopName;
 
-    @SerializedName("Direction")
+    @JsonProperty("Direction")
     private int direction;
 
-    @SerializedName("RouteName")
+    @JsonProperty("RouteName")
     private NameType routeName;
 
-    @SerializedName("EstimateTime")
+    @JsonProperty("EstimateTime")
     private int estimateTime;
 
-    @SerializedName("StopStatus")
+    @JsonProperty("StopStatus")
     private int stopStatus;
 
-    @SerializedName("SrcUpdateTime")
+    @JsonProperty("SrcUpdateTime")
     private Date srcUpdateTime;
 
-    @SerializedName("UpdateTime")
+    @JsonProperty("UpdateTime")
     private Date updateTime;
 
 }

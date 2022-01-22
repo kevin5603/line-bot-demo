@@ -48,7 +48,6 @@ public class KeywordService {
 
     public Long getKeywordId(String userId, String keyword) {
         val optionalKeyword = findByUserIdAndWord(userId, keyword);
-        Long keywordId;
         if (optionalKeyword.isPresent()) {
             return optionalKeyword.get().getId();
         } else {

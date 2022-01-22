@@ -23,8 +23,6 @@ Content-Type: application/json
   "filter": "StopName/Zh_tw eq '上灣仔' and Direction eq '1'"
 }
 
-
-
-###
-GET http://localhost:8001/v2/Taipei/903
-
+### 新增所有站點
+POST http://localhost:8001/api/v0/init/station
+Content-Type: application/json

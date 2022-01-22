@@ -22,7 +22,7 @@ public class BusKeyword implements Serializable {
     @Id
     private Long keywordId;
     @Id
-    private Long stationId;
+    private Long stationGroupId;
     @Id
     private Long busId;
 

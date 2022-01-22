@@ -1,9 +1,14 @@
 package com.kevin.linebotdemo.model;
 
 import lombok.*;
+import org.hibernate.annotations.GeneratorType;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+
+import static javax.persistence.GenerationType.IDENTITY;
 
 /**
  * @author liyanting
@@ -15,6 +20,7 @@ import javax.persistence.Id;
 @RequiredArgsConstructor
 public class Keyword {
     @Id
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
     @NonNull
