@@ -1,9 +1,7 @@
 package com.kevin.linebotdemo.model;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 /**
  * 公車系統查詢API參數規則
@@ -12,12 +10,14 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@RequiredArgsConstructor
 public class BusQueryRule {
+    @NonNull
     private String select;
+    @NonNull
     private String filter;
+    @NonNull
     private String top;
-//    private String
-//    private String
-//    private String
-//    private String
+    /** 場站查詢才會用到 */
+    private String stationCode;
 }

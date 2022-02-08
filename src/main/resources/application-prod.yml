@@ -11,6 +11,9 @@ spring:
     url: jdbc:postgresql://${POSTGRES_URL}/line_bot
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
+  redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
 line.bot:
   channel-token: ${CHANNEL_TOKEN}
   channel-secret: ${CHANNEL_SECRET}

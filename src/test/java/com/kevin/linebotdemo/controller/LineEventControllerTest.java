@@ -2,11 +2,13 @@ package com.kevin.linebotdemo.controller;
 
 import com.kevin.linebotdemo.model.BusQueryRule;
 import com.kevin.linebotdemo.model.LineMissionResponse;
+import com.kevin.linebotdemo.model.StationGroup;
 import com.kevin.linebotdemo.model.dto.BusDto;
 import com.kevin.linebotdemo.model.dto.StationBusDto;
 import com.kevin.linebotdemo.service.BusAPIService;
 import com.kevin.linebotdemo.service.BusKeywordService;
 import com.kevin.linebotdemo.service.KeywordService;
+import com.kevin.linebotdemo.service.UserService;
 import com.kevin.linebotdemo.service.line.RegisterLineService;
 import com.linecorp.bot.client.LineMessagingClient;
 import lombok.val;
@@ -43,6 +45,8 @@ class LineEventControllerTest {
     private BusKeywordService busKeywordService;
     @MockBean
     private BusAPIService busAPIService;
+    @MockBean
+    private UserService userService;
 
     @BeforeEach
     void setUp() {
@@ -51,7 +55,8 @@ class LineEventControllerTest {
                 registerLineService,
                 keywordService,
                 busKeywordService,
-                busAPIService);
+                busAPIService,
+                userService, null, null);
     }
 
     @Test
@@ -120,5 +125,27 @@ class LineEventControllerTest {
 
         // then
         assertEquals(expectSize, stringListMap.size());
+    }
+
+    @Test
+    void queryStationMessage() {
+        // given
+        val stationGroup1 = new StationGroup(1L, "三民國中", "W");
+        val stationGroup2 = new StationGroup(2L, "三民國中", "E");
+        val stationGroup3 = new StationGroup(3L, "三民國中", "N");
+        List<StationGroup> stationGroups = List.of(stationGroup1, stationGroup2, stationGroup3);
+
+        // when
+        String actualMessage = underTest.queryStationMessage(stationGroups);
+
+        // then
+        String expectMessage = "--------------------------------\r\n" +
+                "您所輸入的地點查詢有往多個方向，\r\n" +
+                "請輸入您欲加入的場站編號 格式[場站] ${號碼}？\r\n" +
+                "1-三民國中 (向西)\r\n" +
+                "2-三民國中 (向東)\r\n" +
+                "3-三民國中 (向北)\r\n" +
+                "--------------------------------\r\n";
+        assertEquals(expectMessage, actualMessage);
     }
 }

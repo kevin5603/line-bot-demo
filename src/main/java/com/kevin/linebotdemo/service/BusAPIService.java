@@ -43,7 +43,8 @@ public class BusAPIService {
 
     public String getBusEstimateTime(BusQueryRule busQueryRule) {
         // "StopName,RouteName"
-        return builder(GET_BUS_ESTIMATE_TIME_BY_STATION)
+        String url = String.format(GET_BUS_ESTIMATE_TIME_BY_STATION, busQueryRule.getStationCode());
+        return builder(url)
                 .select(busQueryRule.getSelect())
                 .filter(busQueryRule.getFilter())
                 .build();

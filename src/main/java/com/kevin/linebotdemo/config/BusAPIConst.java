@@ -14,4 +14,5 @@ public class BusAPIConst {
     public static final String SPACE = " ";
     /** 逗號 */
     public static final String COMMA = ",";
+
 }

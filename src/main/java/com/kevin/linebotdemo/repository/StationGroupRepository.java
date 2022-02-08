@@ -13,9 +13,8 @@ import java.util.Optional;
 @Repository
 public interface StationGroupRepository extends JpaRepository<StationGroup, Long> {
 
-    Optional<StationGroup> findByStationNameAndBearing(String stationName, String bearing);
+    List<StationGroup> findByStationNameAndBearing(String stationName, String bearing);
 
-    Long countByStationName(String stationName);
 
     List<StationGroup> findByStationName(String stationName);
 }
