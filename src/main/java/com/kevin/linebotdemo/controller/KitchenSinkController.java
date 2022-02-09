@@ -16,8 +16,8 @@
 
 package com.kevin.linebotdemo.controller;
 
-import com.kevin.linebotdemo.model.Bus;
-import com.kevin.linebotdemo.model.QueryDto;
+import com.kevin.linebotdemo.model.dto.BusDto;
+import com.kevin.linebotdemo.model.dto.QueryDto;
 import com.linecorp.bot.client.LineBlobClient;
 import com.linecorp.bot.client.LineMessagingClient;
 import com.linecorp.bot.client.MessageContentResponse;
@@ -48,8 +48,6 @@ import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
@@ -61,17 +59,18 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.kevin.linebotdemo.config.BusAPIConst.COMMA;
 import static java.util.Collections.singletonList;
 
 @Slf4j
-@LineMessageHandler
+//@LineMessageHandler
 @AllArgsConstructor
+@Deprecated
 public class KitchenSinkController {
     private final LineMessagingClient lineMessagingClient;
 
@@ -157,14 +156,14 @@ public class KitchenSinkController {
         String replyToken = event.getReplyToken();
         this.replyText(replyToken, "Got memberJoined message " + event.getJoined().getMembers()
                 .stream().map(Source::getUserId)
-                .collect(Collectors.joining(",")));
+                .collect(Collectors.joining(COMMA)));
     }
 
     @EventMapping
     public void handleMemberLeft(MemberLeftEvent event) {
         log.info("Got memberLeft message: {}", event.getLeft().getMembers()
                 .stream().map(Source::getUserId)
-                .collect(Collectors.joining(",")));
+                .collect(Collectors.joining(COMMA)));
     }
 
     @EventMapping
@@ -234,6 +233,10 @@ public class KitchenSinkController {
         log.info("Got text message from replyToken:{}: text:{} emojis:{}", replyToken, text,
                 content.getEmojis());
         switch (text) {
+            case "說明": {
+                // TODO
+                break;
+            }
             case "上班": {
                 log.info("line輸入：" + text);
                 final String userId = event.getSource().getUserId();
@@ -248,7 +251,7 @@ public class KitchenSinkController {
                             try {
                                 QueryDto path1 = new QueryDto("8663", "RouteName/Zh_tw eq '藍36'");
                                 QueryDto path2 = new QueryDto("966", "RouteName/Zh_tw eq '民權幹線'");
-                                List<Bus> busInfo = Stream.concat(busEstimatedController.getBusInfo(path1).stream(), busEstimatedController.getBusInfo(path2).stream())
+                                List<BusDto> busInfo = Stream.concat(busEstimatedController.getBusInfo(path1).stream(), busEstimatedController.getBusInfo(path2).stream())
                                         .collect(Collectors.toList());
                                 List<Message> textMessage;
 

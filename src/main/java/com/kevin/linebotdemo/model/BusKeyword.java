@@ -5,10 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-
-import static javax.persistence.GenerationType.AUTO;
+import javax.persistence.IdClass;
+import java.io.Serializable;
 
 /**
  * @author liyanting
@@ -17,10 +16,14 @@ import static javax.persistence.GenerationType.AUTO;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class WebUser {
+@IdClass(BusKeyword.class)
+public class BusKeyword implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = AUTO)
-    private Long id;
-    private String name;
+    private Long keywordId;
+    @Id
+    private Long stationId;
+    @Id
+    private Long busId;
+
 }

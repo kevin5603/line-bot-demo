@@ -1,11 +1,12 @@
 ### local profile ###
 application-dev.yml
-
+src/test/resources/application-dev.yml
 ### apple ###
 **/.DS_Store
 
 ### docker ###
 docker-compose.yml
+docker-compose.yml.bak
 
 ### deploy-config ###
 deploy-config/
@@ -43,3 +44,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### local-test-config ###
+test.sql
+test.http

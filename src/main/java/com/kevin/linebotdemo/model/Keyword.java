@@ -1,11 +1,11 @@
 package com.kevin.linebotdemo.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.GeneratorType;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import static javax.persistence.GenerationType.IDENTITY;
@@ -17,13 +17,15 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Bus {
+@RequiredArgsConstructor
+public class Keyword {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
-    private String name;
 
-    public Bus(String name) {
-        this.name = name;
-    }
+    @NonNull
+    private String userId;
+
+    @NonNull
+    private String word;
 }
