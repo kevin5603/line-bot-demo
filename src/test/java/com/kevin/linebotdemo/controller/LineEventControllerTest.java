@@ -4,11 +4,9 @@ import com.kevin.linebotdemo.model.BusQueryRule;
 import com.kevin.linebotdemo.model.LineMissionResponse;
 import com.kevin.linebotdemo.model.StationGroup;
 import com.kevin.linebotdemo.model.dto.BusDto;
+import com.kevin.linebotdemo.model.dto.NameType;
 import com.kevin.linebotdemo.model.dto.StationBusDto;
-import com.kevin.linebotdemo.service.BusAPIService;
-import com.kevin.linebotdemo.service.BusKeywordService;
-import com.kevin.linebotdemo.service.KeywordService;
-import com.kevin.linebotdemo.service.UserService;
+import com.kevin.linebotdemo.service.*;
 import com.kevin.linebotdemo.service.line.RegisterLineService;
 import com.linecorp.bot.client.LineMessagingClient;
 import lombok.val;
@@ -23,6 +21,7 @@ import reactor.core.publisher.Flux;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -47,16 +46,21 @@ class LineEventControllerTest {
     private BusAPIService busAPIService;
     @MockBean
     private UserService userService;
+    @MockBean
+    private StationGroupService stationGroupService;
+    @MockBean
+    private RedisService redisService;
 
     @BeforeEach
     void setUp() {
         underTest = new LineEventController(
                 lineMessagingClient,
                 registerLineService,
-                keywordService,
                 busKeywordService,
                 busAPIService,
-                userService, null, null);
+                userService,
+                stationGroupService,
+                redisService);
     }
 
     @Test
@@ -81,18 +85,43 @@ class LineEventControllerTest {
     @Test
     void executeCommand() {
         // given
-
         String userId = UUID.randomUUID().toString();
         String keyword = "上班";
+        val stationName = "三民國中";
+        val stationName2 = "上灣仔";
+        val bus1 = "903";
+        val bus2 = "645";
+        val bus3 = "紅32";
+        val bus4 = "藍36";
         List<StationBusDto> stationBusDtoList = List.of(
-                new StationBusDto("三民國中", "000", "903"),
-                new StationBusDto("三民國中", "000", "645"),
-                new StationBusDto("三民國中", "000", "紅32"),
-                new StationBusDto("上灣仔", "000", "藍36"));
+                new StationBusDto(stationName, "000", bus1),
+                new StationBusDto(stationName, "000", bus2),
+                new StationBusDto(stationName, "000", bus3),
+                new StationBusDto(stationName2, "000", bus4));
         BusQueryRule busQueryRule = new BusQueryRule();
         val url = "url";
-        Flux<BusDto> just = Flux.just(new BusDto());
-        List<BusDto> expectResponse = just.collectList().block();
+        val expectBusData1 = new BusDto();
+        expectBusData1.setRouteName(new NameType(bus1, ""));
+        val random = new Random(1).nextInt(600);
+        expectBusData1.setEstimateTime(random);
+        expectBusData1.setStopName(new NameType(stationName, ""));
+
+        val expectBusData2 = new BusDto();
+        expectBusData2.setRouteName(new NameType(bus2, ""));
+        expectBusData2.setEstimateTime(random);
+        expectBusData2.setStopName(new NameType(stationName, ""));
+
+        val expectBusData3 = new BusDto();
+        expectBusData3.setRouteName(new NameType(bus3, ""));
+        expectBusData3.setEstimateTime(random);
+        expectBusData3.setStopName(new NameType(stationName, ""));
+
+        String expectResponse = "903：預估9分45秒到達三民國中\r\n" +
+                "645：預估9分45秒到達三民國中\r\n" +
+                "紅32：預估9分45秒到達三民國中";
+
+
+        Flux<BusDto> just = Flux.just(expectBusData1, expectBusData2, expectBusData3);
 
         when(busKeywordService.findByUserIdAndKeyword(userId, keyword)).thenReturn(stationBusDtoList);
         when(busAPIService.getBusEstimateTime(busQueryRule)).thenReturn(url);
@@ -101,7 +130,7 @@ class LineEventControllerTest {
         when(responseMock.bodyToFlux(BusDto.class)).thenReturn(just);
 
         // when
-        LineMissionResponse actualResponse = underTest.executeCommand(userId, keyword);
+        LineMissionResponse<String> actualResponse = underTest.executeCommand(userId, keyword);
 
         // then
         assertEquals(expectResponse, actualResponse.getBody());

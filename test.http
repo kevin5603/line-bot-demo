@@ -1,27 +1,5 @@
-POST http://localhost:8001/api/v1/message/send
-Content-Type: application/json
-
-{
-  "id": 1,
-  "name": "kevin5603"
-}
-
-###
-POST https://api.line.me/v2/bot/channel/webhook/test
-Authorization: Bearer GJNJKS8yamUyAKXWOpd1hKCQtyBMpY9JtnDqGlkIGgGhxp7Sd44P05439VIXuQhFFsabpu1g433V3Z1f1em5OQrS2uUrJKLEQNc81rpLhNZkGC4Fe6BLmz0Bbv8fxr/75YCqfjH7K9lI76oDLQV4BAdB04t89/1O/w1cDnyilFU=
-Content-Type: application/json
-
-
-###
-POST http://localhost:8001/v2
-Content-Type: application/json
-
-{
-  "city":  "Taipei",
-  "routeName": "藍36",
-  "select": "StopName",
-  "filter": "StopName/Zh_tw eq '上灣仔' and Direction eq '1'"
-}
+### 查詢程式版本
+GET http://localhost:8001/api/v0/version
 
 ### 新增所有站點
 POST http://localhost:8001/api/v0/init/station

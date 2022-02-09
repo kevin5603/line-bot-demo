@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 import static com.kevin.linebotdemo.config.BusAPIConst.COMMA;
 import static com.kevin.linebotdemo.config.BusAPIConst.SPACE;
 import static com.kevin.linebotdemo.config.LineResponseCode.CRATE;
-import static com.kevin.linebotdemo.config.LineResponseCode.SUCCESS;
 
 /**
  * @author liyanting
@@ -70,9 +69,10 @@ public class RegisterLineService {
             ask();
         } else {
             StationGroup stationGroup = stationGroups.get(0);
-            List<Long> stationIdList = stationService.findByNameAndBearing(stationGroup.getStationName(), stationGroup.getBearing())
-                    .stream().map(Station::getId).collect(Collectors.toList());
-            return stationIdList;
+            return stationService.findByNameAndBearing(stationGroup.getStationName(), stationGroup.getBearing())
+                    .stream()
+                    .map(Station::getId)
+                    .collect(Collectors.toList());
         }
         return stationService.getStationId(stationName);
     }
@@ -83,7 +83,7 @@ public class RegisterLineService {
     private void ask() {
     }
 
-    public LineMissionResponse registerCommand(String lineUserId, String message, String stationGroupId) {
+    public LineMissionResponse<String> registerCommand(String lineUserId, String message, String stationGroupId) {
         val dto = RegisterKeywordDTO.getDto(message);
 
         Long keywordId = keywordService.getKeywordId(lineUserId, dto.getKeyword());
@@ -98,7 +98,7 @@ public class RegisterLineService {
         }
         val responseMessage = "新增關鍵字完畢";
         log.info(responseMessage);
-        return new LineMissionResponse(CRATE, responseMessage);
+        return new LineMissionResponse<>(CRATE, responseMessage);
     }
 
     @Data

@@ -1,12 +1,12 @@
 package com.kevin.linebotdemo.controller;
 
 
-import com.kevin.linebotdemo.config.LineResponseCode;
 import com.kevin.linebotdemo.model.BusQueryRule;
 import com.kevin.linebotdemo.model.LineMissionRequest;
 import com.kevin.linebotdemo.model.LineMissionResponse;
 import com.kevin.linebotdemo.model.StationGroup;
 import com.kevin.linebotdemo.model.dto.BusDto;
+import com.kevin.linebotdemo.model.dto.BusKeywordInfoDto;
 import com.kevin.linebotdemo.model.dto.StationBusDto;
 import com.kevin.linebotdemo.service.*;
 import com.kevin.linebotdemo.service.line.RegisterLineService;
@@ -28,12 +28,15 @@ import lombok.val;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
+import static com.kevin.linebotdemo.config.BusAPIConst.COMMA;
 import static com.kevin.linebotdemo.config.BusAPIConst.SPACE;
+import static com.kevin.linebotdemo.config.LineResponseCode.ERROR;
 import static com.kevin.linebotdemo.config.LineResponseCode.SUCCESS;
 
 
@@ -49,7 +52,6 @@ public class LineEventController {
 
     private final LineMessagingClient lineMessagingClient;
     private final RegisterLineService registerLineService;
-    private final KeywordService keywordService;
     private final BusKeywordService busKeywordService;
     private final BusAPIService busAPIService;
     private final UserService userService;
@@ -57,40 +59,87 @@ public class LineEventController {
     private final RedisService redisService;
 
     @EventMapping
-    public void handleTextMessageEvent(MessageEvent<TextMessageContent> event) throws Exception {
+    public void handleTextMessageEvent(MessageEvent<TextMessageContent> event) {
         TextMessageContent message = event.getMessage();
         handleTextContent(event.getReplyToken(), event, message);
     }
 
-    private void handleTextContent(String replyToken, Event event, TextMessageContent content)
-            throws Exception {
+    private void handleTextContent(String replyToken, Event event, TextMessageContent content) {
         String userId = event.getSource().getUserId();
-        val lineMissionRequest = new LineMissionRequest(content, userId);
+        var lineMissionRequest = new LineMissionRequest<>(content, userId);
 
-        val lineMissionResponse = missionDispatcher(lineMissionRequest);
+        LineMissionResponse<String> lineMissionResponse = missionDispatcher(lineMissionRequest);
+
+        pushMessage(userId, lineMissionResponse.getBody());
 
     }
 
 
-    private LineMissionResponse missionDispatcher(LineMissionRequest<TextMessageContent> lineMissionRequest) {
+    private LineMissionResponse<String> missionDispatcher(LineMissionRequest<TextMessageContent> lineMissionRequest) {
         val lineMessage = lineMissionRequest.getContent().getText();
         val lineUserId = lineMissionRequest.getUserId();
-        String headString = getCommand(lineMessage);
 
-        LineMissionResponse lineMissionResponse;
+        String headString = getCommand(lineMessage);
         String message = filterHeader(lineMessage);
+        // TODO 使用策略模式是否更好？業務分得更清楚
         switch (headString) {
-            case "註冊":
-                lineMissionResponse = registerCommand(lineUserId, message);
-                break;
+            case "[註冊]":
+                return registerCommand(lineUserId, message);
             case "[場站]":
-                lineMissionResponse = registerCommand(lineUserId, message, true);
-                pushMessage(lineUserId, (String)lineMissionResponse.getBody());
-                break;
+                // TODO method名稱要再改
+                return registerCommand(lineUserId, message, true);
+            case "[關鍵字]":
+                return queryKeywordList(lineUserId);
+            case "[刪除]":
+                return deleteKeyword(lineUserId, message);
             default:
-                lineMissionResponse = executeCommand(lineUserId, lineMessage);
+                return executeCommand(lineUserId, lineMessage);
         }
-        return lineMissionResponse;
+    }
+
+    /**
+     * 刪除關鍵字，目前有兩種情況
+     * 一是刪除該關鍵字所有到站提示
+     * 二是只刪除該關鍵字中使用者欲刪除的公車到站提示
+     * @param lineUserId 使用者ID
+     * @param message 使用者指令
+     * @return 回傳結果告訴使用者
+     */
+    private LineMissionResponse<String> deleteKeyword(String lineUserId, String message) {
+        log.info("執行[刪除] 使用者：{} 指令：{}", lineUserId, message);
+        String[] split = message.split(SPACE);
+        String keyword = split[0];
+        if (split.length == 1) {
+            // 全刪
+            busKeywordService.deleteByUserIdAndKeyWord(lineUserId, keyword);
+        } else {
+            // 只刪除特定
+            List<String> busList = Arrays.asList(split[1].split(COMMA));
+            busKeywordService.deleteByUserIdAndKeyWordAndBusId(lineUserId, keyword, busList);
+
+        }
+        return new LineMissionResponse<>(SUCCESS, "刪除成功");
+    }
+
+    /**
+     * 顯示使用者以註冊關鍵字
+     * @param lineUserId 使用者ID
+     * @return
+     */
+    private LineMissionResponse<String> queryKeywordList(String lineUserId) {
+        log.info("執行[關鍵字] 使用者：{}", lineUserId);
+        val allKeywordInfoByUserId = busKeywordService.findAllKeywordInfoByUserId(lineUserId);
+        Map<String, List<BusKeywordInfoDto>> collect = allKeywordInfoByUserId.stream().collect(Collectors.groupingBy(
+                i -> i.getKeyword() + ":" + i.getStationName()
+        ));
+        StringBuilder b = new StringBuilder();
+        for (String s : collect.keySet()) {
+            String[] split = s.split(":");
+            String busKeywordInfoDtos = collect.get(s).stream().map(i -> i.getBusName()).collect(Collectors.joining(","));
+            b.append(String.format("關鍵字：%s 場站名稱：%s 公車：%s\r\n", split[0], split[1], busKeywordInfoDtos));
+        }
+        String responseMessage = b.toString();
+        return new LineMissionResponse<>(SUCCESS, responseMessage);
     }
 
     /**
@@ -108,9 +157,17 @@ public class LineEventController {
      * @param keyword 關鍵字
      * @return LineMissionResponse
      */
-    public LineMissionResponse executeCommand(String lineUserId, String keyword) {
+    public LineMissionResponse<String> executeCommand(String lineUserId, String keyword) {
+        val busDtoLineMissionResponse = new LineMissionResponse<String>();
         // 依場站再分群組
         Map<String, List<StationBusDto>> stationBusDtoGroupByStationCode = groupByStationCode(lineUserId, keyword);
+
+        // 查無關鍵字
+        if (stationBusDtoGroupByStationCode.isEmpty()) {
+            busDtoLineMissionResponse.setBody("查無相關資訊，請重新輸入");
+            return busDtoLineMissionResponse;
+        }
+
         List<BusDto> busDtoList = new ArrayList<>();
         WebClient.ResponseSpec data;
 
@@ -120,43 +177,38 @@ public class LineEventController {
             BusQueryRule busQueryRule = combineQuery(list);
             // 各自call BusAPIService
             val url = busAPIService.getBusEstimateTime(busQueryRule);
-            log.info("url: {}", url);
+            log.info("bus api url: {}", url);
             data = busAPIService.getData(url);
             List<BusDto> block = data.bodyToFlux(BusDto.class).collectList().block();
-            System.out.println(block);
-            busDtoList.addAll(block);
+            if (block != null) {
+                busDtoList.addAll(block);
+            }
         }
-
-        // 打包結果回傳
-        val busDtoLineMissionResponse = new LineMissionResponse<List<BusDto>>();
-        busDtoLineMissionResponse.setBody(busDtoList);
-
-        List<String> messageList = busDtoList.stream()
+        var responseMessage = busDtoList.stream()
                 .map(bus -> String.format("%s：預估%d分%d秒到達%s",
                     bus.getRouteName().getZh_tw(),
                     bus.getEstimateTime() / 60,
                     bus.getEstimateTime() % 60,
                     bus.getStopName().getZh_tw()))
-                .collect(Collectors.toList());
+                .collect(Collectors.joining("\r\n"));
 
-        log.info("info: {}", messageList);
+        log.info("info: {}", responseMessage);
+        busDtoLineMissionResponse.setBody(responseMessage);
 
-        pushMessage(lineUserId, messageList);
         return busDtoLineMissionResponse;
     }
 
     /**
      * 依場站代碼在做區分等等要依照場站代碼分別區Call公共運輸API
-     * @param userId
-     * @param keyword
-     * @return
+     * @param lineUserId 使用者ID
+     * @param keyword 關鍵字
+     * @return 取出該場站相關的所有公車資訊，並且依照場站做區分
      */
-    protected Map<String, List<StationBusDto>> groupByStationCode(String userId, String keyword) {
-        List<StationBusDto> stationBusDtoList = busKeywordService.findByUserIdAndKeyword(userId, keyword);
-        Map<String, List<StationBusDto>> collect = stationBusDtoList
+    protected Map<String, List<StationBusDto>> groupByStationCode(String lineUserId, String keyword) {
+        List<StationBusDto> stationBusDtoList = busKeywordService.findByUserIdAndKeyword(lineUserId, keyword);
+        return stationBusDtoList
                 .stream()
                 .collect(Collectors.groupingBy(StationBusDto::getStationCode));
-        return collect;
     }
 
     public BusQueryRule combineQuery(List<StationBusDto> list) {
@@ -176,7 +228,8 @@ public class LineEventController {
      * @param message 用戶訊息
      * @return
      */
-    private LineMissionResponse registerCommand(String lineUserId, String message) {
+    private LineMissionResponse<String> registerCommand(String lineUserId, String message) {
+        log.info("執行[註冊] 使用者：{} 指令：{}", lineUserId, message);
         if (!userService.hasUser(lineUserId)) {
             userService.createUser(lineUserId);
         }
@@ -191,15 +244,15 @@ public class LineEventController {
             redisService.set(lineUserId, message);
 
             String stationQueryMessage = queryStationMessage(stationGroups);
-            pushMessage(lineUserId, stationQueryMessage);
-            return new LineMissionResponse(SUCCESS, "需近一步確認場站方向");
+            return new LineMissionResponse<String>(SUCCESS, stationQueryMessage);
         } else {
             // TODO 只有單一場站 極少數case
-            return new LineMissionResponse(LineResponseCode.ERROR);
+            return new LineMissionResponse<String>(ERROR, "TODO");
         }
     }
 
-    private LineMissionResponse registerCommand(String lineUserId, String stationGroupId, boolean getStation) {
+    private LineMissionResponse<String> registerCommand(String lineUserId, String stationGroupId, boolean getStation) {
+        log.info("執行[場站] 使用者：{} 場站群組ID：{}", lineUserId, stationGroupId);
         String command = redisService.get(lineUserId);
         return registerLineService.registerCommand(lineUserId, command, stationGroupId);
     }
@@ -241,7 +294,7 @@ public class LineEventController {
 
     /**
      * 過濾開頭指令
-     * @param lineMessage
+     * @param lineMessage 使用者輸入的訊息
      * @return
      */
     private String filterHeader(String lineMessage) {
@@ -271,17 +324,10 @@ public class LineEventController {
      * @param message 發送訊息
      * @return
      */
-    public LineMissionResponse pushMessage(String lineUserId, String message) {
+    public void pushMessage(String lineUserId, String message) {
         log.info("lineUserId: {} message: {}", lineUserId, message);
         val textMessage = new TextMessage(message);
         lineMessagingClient.pushMessage(new PushMessage(lineUserId, textMessage));
-        return new LineMissionResponse(SUCCESS);
     }
 
-    public LineMissionResponse pushMessage(String lineUserId, List<String> message) {
-        log.info("lineUserId: {} message: {}", lineUserId, message);
-        List<Message> collect = message.stream().map(m -> new TextMessage(m)).collect(Collectors.toList());
-        lineMessagingClient.pushMessage(new PushMessage(lineUserId, collect));
-        return new LineMissionResponse(SUCCESS);
-    }
 }

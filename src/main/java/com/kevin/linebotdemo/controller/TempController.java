@@ -9,12 +9,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
+ * for test
  * @author liyanting
  */
 @RestController
 @RequestMapping("test")
 @AllArgsConstructor
 @Slf4j
+@Deprecated
 public class TempController {
 
     private final BusService busService;
