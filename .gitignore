@@ -6,7 +6,7 @@ src/test/resources/application-dev.yml
 
 ### docker ###
 docker-compose.yml
-docker-compose.yml.bak
+docker-compose-prod.yml
 
 ### deploy-config ###
 deploy-config/
