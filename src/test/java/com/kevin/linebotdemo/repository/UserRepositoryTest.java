@@ -1,7 +1,9 @@
 package com.kevin.linebotdemo.repository;
 
+import com.kevin.linebotdemo.config.PostgresContainerExtension;
 import com.kevin.linebotdemo.model.Users;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -18,28 +20,16 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 
+@ExtendWith(PostgresContainerExtension.class)
 @ActiveProfiles("test")
 @DataJpaTest
 @Sql({"/test_data.sql"})
-@Testcontainers
 @AutoConfigureTestDatabase(replace = NONE)
 class UserRepositoryTest {
 
     @Autowired
     private UserRepository underTest;
 
-    @Container
-    public static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:11.1")
-            .withDatabaseName("test-db")
-            .withUsername("sa")
-            .withPassword("Passw0rd");
-
-    @DynamicPropertySource
-    public static void properties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
-        registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
-        registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
-    }
 
 //    @Test
     public void a() {

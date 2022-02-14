@@ -1,5 +1,6 @@
 package com.kevin.linebotdemo.repository;
 
+import com.kevin.linebotdemo.config.PostgresContainerExtension;
 import com.kevin.linebotdemo.model.Bus;
 import com.kevin.linebotdemo.model.BusKeyword;
 import com.kevin.linebotdemo.model.Keyword;
@@ -9,6 +10,7 @@ import com.kevin.linebotdemo.model.dto.StationBusDto;
 import lombok.val;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -28,9 +30,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.*;
 
+@ExtendWith(PostgresContainerExtension.class)
 @ActiveProfiles("test")
 @DataJpaTest
-@Testcontainers
 @AutoConfigureTestDatabase(replace = NONE)
 class BusKeywordRepositoryTest {
 
@@ -42,21 +44,6 @@ class BusKeywordRepositoryTest {
     private KeywordRepository keywordRepository;
     @Autowired
     private StationRepository stationRepository;
-
-    @Container
-    public static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:11.1")
-            .withDatabaseName("test-db")
-            .withUsername("sa")
-            .withPassword("Passw0rd");
-
-    @DynamicPropertySource
-    public static void properties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
-        registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
-        registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
-    }
-
-
 
     @Test
     void findByUserIdAndKeyword() {
