@@ -1,6 +1,6 @@
 ### 查詢程式版本
-GET http://localhost:8001/api/v0/version
+GET http://localhost/api/v0/version
 
 ### 新增所有站點
-POST http://localhost:8001/api/v0/init/station
+POST http://localhost/api/v0/init/station
 Content-Type: application/json
