@@ -1,0 +1,6 @@
+---
+server:
+  port: 8001
+info:
+  title: line公車小幫手
+  version: v0.3

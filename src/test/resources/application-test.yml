@@ -1,0 +1,13 @@
+---
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+      format_sql: true
+line.bot:
+  channel-token: 'GVDvTl7JEcSnZz0pPC9RVZVWicbLhWUdB+8hBAWTrA31GezcXPxrZO9Tx1O9B9W6nW++/xwO8pEjDB3VwQchoWaz5+Ji0cEJc7EExeZ2QdFJzXPMIz95x0JG128+mr8FCnrWKwgR+YCnKVznJXDlzwdB04t89/1O/w1cDnyilFU='
+  channel-secret: 'f6acb61cfdd1acae722e10f457e4dd76'
+  handler.path: /callback
+bus:
+  app-id: '280c33ff7e484178b7453137d9a1bd24'
+  app-key: 'Q154KEsr409xweG9ZiueQo2gRPA'

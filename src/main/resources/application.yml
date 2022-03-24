@@ -1,2 +1,10 @@
+---
 server:
   port: 8001
+logging:
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(---){faint} %clr([%15.15t]){faint}  %clr(%-40.40logger{39}){cyan} %clr(:){faint}  %m%n"
+info:
+  title: line公車小幫手
+  version: v0.3
+
